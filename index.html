@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Preguntas en Amiguis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              serif: ['"Cinzel"', 'serif'],
+              sans: ['"Inter"', 'sans-serif'],
+            },
+            colors: {
+              hk: {
+                red: '#FF0000', // Brighter Neon Red
+                darkRed: '#8B0000',
+                gold: '#FFD700',
+                neonBlue: '#00FFFF',
+                neonPink: '#FF1493',
+                neonGreen: '#39FF14',
+                purple: '#9D00FF',
+              }
+            },
+            animation: {
+              'bounce-slow': 'bounce 3s infinite',
+              'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'neon-flicker': 'flicker 2s infinite',
+            },
+            keyframes: {
+              flicker: {
+                '0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100%': { opacity: 0.99, filter: 'drop-shadow(0 0 1px #fff) drop-shadow(0 0 15px currentColor)' },
+                '20%, 21.999%, 63%, 63.999%, 65%, 69.999%': { opacity: 0.4, filter: 'none' },
+              }
+            }
+          },
+        },
+      }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #1a0505;
+            color: white;
+            overflow-x: hidden;
+        }
+        /* Chinese Pattern Overlay */
+        .bg-pattern {
+            background-image: radial-gradient(circle, #330000 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .neon-box {
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5), inset 0 0 20px rgba(255, 0, 0, 0.2);
+            border: 2px solid #FF0000;
+        }
+        
+        .chinese-border {
+            border: 4px double #FFD700;
+            position: relative;
+        }
+        
+        .chinese-corner {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-color: #FFD700;
+            border-style: solid;
+            transition: all 0.3s ease;
+        }
+        
+        .top-left { top: -2px; left: -2px; border-width: 4px 0 0 4px; }
+        .top-right { top: -2px; right: -2px; border-width: 4px 4px 0 0; }
+        .bottom-left { bottom: -2px; left: -2px; border-width: 0 0 4px 4px; }
+        .bottom-right { bottom: -2px; right: -2px; border-width: 0 4px 4px 0; }
+
+        .neon-text-red {
+            text-shadow: 0 0 5px #FF0000, 0 0 10px #FF0000, 0 0 20px #8B0000;
+        }
+        .neon-text-gold {
+            text-shadow: 0 0 5px #FFD700, 0 0 15px #DAA520;
+        }
+        .flower-spin {
+            animation: spin 12s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react-dom/client": "https://esm.sh/react-dom@^19.2.3/client"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
