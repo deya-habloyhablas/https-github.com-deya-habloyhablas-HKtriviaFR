@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Award, ChevronRight, Users, Music, Star, MapPin, Coffee, BookOpen } from 'lucide-react';
+import { Award, ChevronRight, Users, Music, Star, MapPin, Coffee, BookOpen, ArrowRight } from 'lucide-react';
 
 // --- Types & Interfaces ---
 
@@ -32,6 +32,7 @@ interface Question {
   imageUrl?: string;
   imageShowTiming?: 'question' | 'answer';
   explanation?: string;
+  points?: number; // Added points support
 }
 
 interface Player {
@@ -44,19 +45,38 @@ interface Player {
 
 const INITIAL_PLAYERS = ["Romain", "Alice", "Quentin", "Luc", "Charlotte", "Pablo", "Isabelle"];
 
-// LOCAL IMAGES CONFIGURATION
+// IMAGES CONFIGURATION
 const IMAGES = {
-  q1_answer: "./images/respuesta_pregunta_1.jpg",
-  q2_question: "./images/pregunta_2.jpg",
-  q3_answer: "./images/respuesta_pregunta_3.jpg",
-  q5_answer: "./images/respuesta_pregunta_5.jpg",
-  q6_question: "./images/pregunta_6.jpg",
-  q7_answer: "./images/respuesta_pregunta_7.jpg",
-  q9_answer: "./images/respuesta_pregunta_9.jpg",
-  q13_answer: "./images/respuesta_pregunta_13.jpg",
-  q15_answer: "./images/respuesta_pregunta_15.jpg",
-  q16_answer: "./images/respuesta_pregunta_16.jpg",
-  q19_question: "./images/pregunta_19.jpg",
+  // PREGUNTA 1: Discover HK (Islands)
+  q1_answer: "https://www.discoverhongkong.com/content/dam/dhk/gohk/2022/tai-lam-country-park/hero-image/hero-960x720.jpg",
+  // PREGUNTA 2: Repulse Bay (The Hole)
+  q2_question: "https://upload.wikimedia.org/wikipedia/commons/6/6c/The_Repulse_Bay_Overview_201501.jpg",
+  // RESPUESTA 3: Skyscrapers Density
+  q3_answer: "https://i.redd.it/lw8kw5hso8af1.jpeg",
+  // RESPUESTA 5: Bamboo Scaffolding
+  q5_answer: "https://www.shutterstock.com/image-photo/bamboo-scaffolding-construction-site-260nw-74588047.jpg",
+  // PREGUNTA 6: Dim Sum
+  q6_question: "https://s.dash.co/2019/06/14/030601/header2.jpg",
+  // RESPUESTA 7: Escalator
+  q7_answer: "https://media.timeout.com/images/105637372/image.jpg",
+  // PREGUNTA 9: Big Buddha
+  q9_answer: "https://hongkongcheapo.com/wp-content/uploads/sites/7/2019/01/Hong-Kong-Big-Buddha-iStock-1149065884.jpg",
+  // RESPUESTA 13: Pink Dolphin
+  q13_answer: "https://expatliving.net/hong-kong/wp-content/uploads/sites/4/2020/03/Pinkdolphin.jpg",
+  // PREGUNTA 14: Feng Shui / Bagua Mirror
+  q14_answer: "https://media.timeout.com/images/105385306/750/562/image.jpg",
+  // RESPUESTA 15: Flag/Bauhinia
+  q15_answer: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Flag_of_Hong_Kong.svg/2560px-Flag_of_Hong_Kong.svg.png",
+  // Q16: Jackie Chan (Alternative reliable source since user didn't provide specific URL but requested image)
+  q16_answer: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Jackie_Chan_July_2016.jpg/640px-Jackie_Chan_July_2016.jpg",
+  // PREGUNTA 18: Victoria Peak View
+  q18_answer: "https://res.klook.com/image/upload/w_1265,h_791,c_fill,q_85/w_80,x_15,y_15,g_south_west,l_Klook_water_br_trans_yhcmh3/activities/ifm3ngwvqoxifp49etyf.webp",
+  // PREGUNTA 19: Red Minibus
+  q19_question: "https://cdn.i-scmp.com/sites/default/files/d8/images/canvas/2021/06/18/74728f48-603a-4c15-adbf-c3c1061c638d_758971e5.jpg",
+  // RESPUESTA 20: Chopsticks etiquette
+  q20_answer: "https://img.static-kl.com/transform/8f544c53-5ae4-42c3-b973-85fbd43194dc/",
+  // PREGUNTA 21: Pawn Shop Symbol
+  q21_question: "https://www.polyu.edu.hk/cpa/milestones/filemanager/common/201803/images/img_technology_7b_large.jpg",
 };
 
 const QUESTIONS: Question[] = [
@@ -67,7 +87,7 @@ const QUESTIONS: Question[] = [
     options: ["12", "65", "123", "261"],
     correctIndices: [3],
     imageUrl: IMAGES.q1_answer,
-    imageShowTiming: 'answer'
+    imageShowTiming: 'answer' // Corrected: Image shows on Answer
   },
   {
     id: 2,
@@ -133,7 +153,7 @@ const QUESTIONS: Question[] = [
     text: "Pouvez-vous estimer à 2 m près, la taille du Boudha (assis) en bronze de l’île de Lantau, qui est le 2ème plus grand du monde.",
     correctText: "34m",
     imageUrl: IMAGES.q9_answer,
-    imageShowTiming: 'answer'
+    imageShowTiming: 'question' // Kept as question to help estimation
   },
   {
     id: 10,
@@ -168,7 +188,9 @@ const QUESTIONS: Question[] = [
     category: Category.CULTURE,
     text: "Pour proteger le feng shui de leur habitation, qu’utilisent les voisins de l’immeuble qui porte malheur ?",
     options: ["Poisson pourri", "Encens", "Pierres de jade", "Mirroirs"],
-    correctIndices: [3]
+    correctIndices: [3],
+    imageUrl: IMAGES.q14_answer,
+    imageShowTiming: 'question' // Changed to show during question
   },
   {
     id: 15,
@@ -200,7 +222,9 @@ const QUESTIONS: Question[] = [
     category: Category.GEOGRAPHY,
     text: "Comment s’appelle le point culminant à HK qui permet une vue splendide sur la ville ?",
     options: ["Victoria Peak", "Hanna Peak", "Elisabeth Peak", "Margaret Peak"],
-    correctIndices: [0]
+    correctIndices: [0],
+    imageUrl: IMAGES.q18_answer,
+    imageShowTiming: 'question'
   },
   {
     id: 19,
@@ -216,14 +240,26 @@ const QUESTIONS: Question[] = [
     category: Category.CULTURE,
     text: "Pourquoi est-il considéré comme impoli de laisser ses baguettes plantées verticalement dans son bol de riz ?",
     options: ["Le riz est un aliment sacré", "Parce que cela ressemble à des bâtons d'encens brûlés lors des funérailles", "Parce que cela signifie que vous avez encore faim.", "Parce que cela inviter les esprits et les fantômes à venir partager ton repas"],
-    correctIndices: [1, 3] // B and D
+    correctIndices: [1, 3], // B and D
+    imageUrl: IMAGES.q20_answer,
+    imageShowTiming: 'answer'
+  },
+  {
+    id: 21,
+    category: Category.CULTURE,
+    text: "BONUS (2 Points) : Que représente la forme du symbole des 'Pawn Shops' (prêteurs sur gages) ?",
+    options: ["Une main avec des baguettes qui prennent un dim sum", "Une chauve-souris", "Une coiffe traditionelle", "Une couronne"],
+    correctIndices: [1],
+    imageUrl: IMAGES.q21_question,
+    imageShowTiming: 'question',
+    points: 2
   }
 ];
 
 // --- Helper Components ---
 
 const NeonButton: React.FC<{ onClick: () => void; children: React.ReactNode; variant?: 'primary' | 'secondary' | 'danger'; className?: string }> = ({ onClick, children, variant = 'primary', className = '' }) => {
-  const baseStyle = "px-8 py-3 rounded-sm font-serif font-bold tracking-wider transition-all duration-300 transform hover:scale-105 active:scale-95 border-2 relative overflow-hidden group";
+  const baseStyle = "px-6 py-2 md:px-8 md:py-3 rounded-sm font-serif font-bold tracking-wider transition-all duration-300 transform hover:scale-105 active:scale-95 border-2 relative overflow-hidden group";
   
   const variants = {
     primary: "border-hk-neonBlue text-hk-neonBlue hover:bg-hk-neonBlue hover:text-black shadow-[0_0_15px_rgba(0,255,255,0.7)] bg-black/50",
@@ -239,10 +275,10 @@ const NeonButton: React.FC<{ onClick: () => void; children: React.ReactNode; var
   );
 };
 
-// Container with Chinese corners
+// Container with Chinese corners - made more flexible for layout
 const NeonCard: React.FC<{ children: React.ReactNode; className?: string; borderColor?: string }> = ({ children, className = '', borderColor = 'border-hk-gold' }) => {
   return (
-    <div className={`chinese-border bg-black/60 backdrop-blur-md p-6 relative ${className}`}>
+    <div className={`chinese-border bg-black/60 backdrop-blur-md relative ${className}`}>
       {/* Decorative Corners */}
       <div className="chinese-corner top-left"></div>
       <div className="chinese-corner top-right"></div>
@@ -256,7 +292,7 @@ const NeonCard: React.FC<{ children: React.ReactNode; className?: string; border
 // --- Sub-Screens ---
 
 const StartScreen: React.FC<{ onStart: () => void }> = ({ onStart }) => (
-  <div className="flex flex-col items-center justify-center min-h-screen text-center space-y-12 animate-fade-in px-4 relative">
+  <div className="flex flex-col items-center justify-center h-screen text-center space-y-12 animate-fade-in px-4 relative overflow-hidden">
     {/* Decorative vertical text (fictional aesthetic) */}
     <div className="absolute left-4 top-10 bottom-10 flex flex-col justify-center space-y-8 opacity-50 hidden md:flex">
       <div className="w-12 border-2 border-hk-red p-2 text-hk-red font-serif font-bold text-2xl shadow-[0_0_10px_red]">香<br/>港</div>
@@ -292,7 +328,7 @@ const StartScreen: React.FC<{ onStart: () => void }> = ({ onStart }) => (
 
 const IntroScreen: React.FC<{ players: Player[], onNext: () => void }> = ({ players, onNext }) => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen px-4 w-full">
+    <div className="flex flex-col items-center justify-center h-screen px-4 w-full overflow-hidden">
       <div className="bg-hk-red/10 p-4 w-full max-w-4xl border-y-4 border-hk-red mb-8 text-center">
         <h2 className="text-4xl md:text-5xl font-serif text-hk-white neon-text-red">
           LOS JUGADORES
@@ -335,7 +371,7 @@ const PrepScreen: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
   }, [onComplete]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-black/95">
+    <div className="flex flex-col items-center justify-center h-screen bg-black/95">
       <div className="border-4 border-hk-neonPink p-12 shadow-[0_0_50px_rgba(255,20,147,0.5)] bg-black">
         <h1 className="text-6xl md:text-9xl font-serif text-transparent bg-clip-text bg-gradient-to-r from-hk-neonPink to-purple-500 animate-pulse text-center leading-tight">
           ¿LISTAS?
@@ -355,8 +391,8 @@ const RankingScreen: React.FC<{ players: Player[], onRestart: () => void }> = ({
   const winner = sortedPlayers[0];
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen px-4 py-8 max-w-5xl mx-auto w-full">
-      <div className="relative mb-12 animate-bounce-slow">
+    <div className="flex flex-col items-center justify-center h-screen px-4 py-8 max-w-5xl mx-auto w-full overflow-hidden">
+      <div className="relative mb-6 animate-bounce-slow scale-75 md:scale-100">
         <div className="absolute -inset-10 bg-hk-gold opacity-20 blur-3xl rounded-full"></div>
         <Award size={140} className="text-hk-gold drop-shadow-[0_0_25px_rgba(255,215,0,1)] relative z-10" />
         <div className="absolute inset-0 flex items-center justify-center pt-4 z-20">
@@ -365,22 +401,22 @@ const RankingScreen: React.FC<{ players: Player[], onRestart: () => void }> = ({
         </div>
       </div>
 
-      <h1 className="text-5xl font-serif text-white mb-2 tracking-[0.5em] text-center">GANADOR</h1>
-      <h2 className="text-7xl md:text-8xl font-bold text-hk-red mb-12 neon-text-red text-center">{winner.name}</h2>
+      <h1 className="text-3xl md:text-5xl font-serif text-white mb-2 tracking-[0.5em] text-center">GANADOR</h1>
+      <h2 className="text-5xl md:text-7xl font-bold text-hk-red mb-6 neon-text-red text-center">{winner.name}</h2>
       
-      <NeonCard className="w-full mb-8">
-        <h3 className="text-3xl font-serif text-hk-gold mb-6 border-b-2 border-hk-gold pb-4 text-center tracking-widest">CLASIFICACIÓN</h3>
-        <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+      <NeonCard className="w-full mb-8 flex-1 min-h-0 flex flex-col">
+        <h3 className="text-3xl font-serif text-hk-gold mb-4 border-b-2 border-hk-gold pb-2 text-center tracking-widest shrink-0">CLASIFICACIÓN</h3>
+        <div className="space-y-2 overflow-y-auto pr-2 custom-scrollbar flex-1">
           {sortedPlayers.map((p, idx) => (
-            <div key={p.id} className="flex items-center justify-between p-4 border border-white/10 hover:bg-white/5 transition-colors bg-black/40">
+            <div key={p.id} className="flex items-center justify-between p-3 border border-white/10 hover:bg-white/5 transition-colors bg-black/40">
               <div className="flex items-center space-x-6">
-                <span className={`font-serif text-3xl font-bold w-12 text-right ${idx === 0 ? 'text-hk-gold drop-shadow-[0_0_8px_gold]' : 'text-gray-500'}`}>
+                <span className={`font-serif text-2xl font-bold w-12 text-right ${idx === 0 ? 'text-hk-gold drop-shadow-[0_0_8px_gold]' : 'text-gray-500'}`}>
                   #{idx + 1}
                 </span>
-                <span className={`text-2xl font-sans ${idx === 0 ? 'text-white font-bold' : 'text-gray-300'}`}>{p.name}</span>
+                <span className={`text-xl font-sans ${idx === 0 ? 'text-white font-bold' : 'text-gray-300'}`}>{p.name}</span>
               </div>
               <div className="flex items-center space-x-2">
-                <span className="text-3xl font-bold text-hk-neonBlue drop-shadow-[0_0_5px_cyan]">{p.score}</span>
+                <span className="text-2xl font-bold text-hk-neonBlue drop-shadow-[0_0_5px_cyan]">{p.score}</span>
                 <span className="text-sm text-gray-400 uppercase tracking-wider">pts</span>
               </div>
             </div>
@@ -404,12 +440,6 @@ const QuizScreen: React.FC<{
 }> = ({ players, question, totalQuestions, currentNumber, onNext }) => {
   const [showAnswer, setShowAnswer] = useState(false);
   const [selectedWinners, setSelectedWinners] = useState<Set<string>>(new Set());
-
-  // Reset state when question changes
-  useEffect(() => {
-    setShowAnswer(false);
-    setSelectedWinners(new Set());
-  }, [question]);
 
   const toggleWinner = (playerId: string) => {
     const newSet = new Set(selectedWinners);
@@ -435,124 +465,169 @@ const QuizScreen: React.FC<{
   // Logic to determine if image should be shown
   const showImage = question.imageUrl && (question.imageShowTiming === 'question' || (question.imageShowTiming === 'answer' && showAnswer));
 
+  // Points handling
+  const points = question.points || 1;
+
+  // Options Colors - Fixed Neon palette for answers
+  const optionColors = [
+    { border: 'border-hk-neonBlue', text: 'text-hk-neonBlue', shadow: 'shadow-[0_0_10px_rgba(0,255,255,0.3)]', hover: 'hover:bg-hk-neonBlue/10 hover:shadow-[0_0_20px_cyan]' },
+    { border: 'border-hk-neonPink', text: 'text-hk-neonPink', shadow: 'shadow-[0_0_10px_rgba(255,20,147,0.3)]', hover: 'hover:bg-hk-neonPink/10 hover:shadow-[0_0_20px_deeppink]' },
+    { border: 'border-hk-purple', text: 'text-hk-purple', shadow: 'shadow-[0_0_10px_rgba(157,0,255,0.3)]', hover: 'hover:bg-hk-purple/10 hover:shadow-[0_0_20px_purple]' },
+    { border: 'border-hk-gold', text: 'text-hk-gold', shadow: 'shadow-[0_0_10px_rgba(255,215,0,0.3)]', hover: 'hover:bg-hk-gold/10 hover:shadow-[0_0_20px_gold]' },
+  ];
+
   return (
-    <div className="flex flex-col items-center justify-start min-h-screen px-4 py-6 w-full max-w-6xl mx-auto">
-      {/* Decorative Header Bar */}
-      <div className="w-full flex justify-between items-end mb-6 border-b border-white/20 pb-2">
+    <div className="flex flex-col h-screen w-full max-w-7xl mx-auto px-4 py-4 relative overflow-hidden">
+      {/* Decorative Header Bar - Compact */}
+      <div className="flex-none w-full flex justify-between items-end mb-4 border-b border-white/20 pb-2">
         <div className="text-gray-400 font-serif text-lg">
             <span className="text-hk-red text-2xl mr-2">No.</span> 
             {currentNumber} <span className="text-xs">/ {totalQuestions}</span>
         </div>
-        <div className={`px-6 py-2 border-2 text-sm font-bold uppercase tracking-widest ${categoryColorMap[question.category]}`}>
+        <div className={`px-4 py-1 border-2 text-xs md:text-sm font-bold uppercase tracking-widest ${categoryColorMap[question.category]}`}>
           {question.category}
         </div>
       </div>
 
-      {/* Question Card using NeonCard */}
-      <NeonCard className="w-full mb-8">
-        <div className="mb-8 relative">
-            {/* Neon Sign Effect for Question Text */}
-            <h2 className="text-3xl md:text-5xl text-white font-serif font-bold text-center leading-relaxed drop-shadow-[0_0_2px_black]">
+      {/* Main Content Area - Flexbox to fill available space */}
+      <div className="flex-1 min-h-0 flex flex-col justify-center gap-4 md:gap-6 relative">
+          
+          <div className="flex-none">
+             {/* Neon Sign Effect for Question Text - Adjusted for responsiveness */}
+            <h2 className="text-2xl md:text-4xl lg:text-5xl text-white font-serif font-bold text-center leading-relaxed tracking-widest drop-shadow-[0_0_2px_black] px-2 md:px-12">
                 {question.text}
             </h2>
-        </div>
+            {points > 1 && (
+               <div className="flex justify-center mt-2">
+                 <span className="text-hk-neonPink font-bold text-lg md:text-xl animate-pulse border border-hk-neonPink px-3 py-1 rounded">
+                    BONUS x{points}
+                 </span>
+               </div>
+            )}
+          </div>
 
-        {/* Image Area */}
-        <div className={`transition-all duration-700 ease-in-out overflow-hidden ${showImage ? 'max-h-[500px] opacity-100 mb-8' : 'max-h-0 opacity-0'}`}>
-          {question.imageUrl && (
-             <div className="flex justify-center p-4 bg-black/50 border border-white/10">
-                <img src={question.imageUrl} alt="Imagen" className="max-h-[400px] object-contain shadow-[0_0_20px_rgba(0,0,0,0.8)]" />
+          {/* Image Area - Responsive Flex Item */}
+          {showImage && question.imageUrl && (
+             <div className="flex-1 min-h-0 flex justify-center items-center py-2">
+                 <img 
+                    src={question.imageUrl} 
+                    alt="Imagen" 
+                    className="max-h-full max-w-full object-contain shadow-[0_0_20px_rgba(0,0,0,0.8)] border border-white/10 p-2 bg-black/50" 
+                 />
              </div>
           )}
-        </div>
 
-        {/* Options / Answer Display */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {question.options ? (
-            question.options.map((opt, idx) => {
-              const isCorrect = showAnswer && question.correctIndices?.includes(idx);
-              const isWrong = showAnswer && !question.correctIndices?.includes(idx);
-              
-              return (
-                <div 
-                  key={idx}
-                  className={`
-                    p-6 border-2 text-xl font-sans transition-all duration-500 flex items-center bg-black/80
-                    ${!showAnswer ? 'border-gray-700 hover:border-hk-gold hover:text-hk-gold text-gray-300 cursor-pointer' : ''}
-                    ${isCorrect ? 'border-hk-neonGreen bg-hk-neonGreen/20 text-white shadow-[0_0_20px_lime] z-10 font-bold scale-105' : ''}
-                    ${isWrong ? 'border-red-900/50 text-gray-600 opacity-40' : ''}
-                  `}
-                >
-                  <span className={`w-10 h-10 flex items-center justify-center rounded-sm mr-4 border-2 font-serif ${isCorrect ? 'border-hk-neonGreen text-hk-neonGreen' : 'border-gray-600 text-gray-500'}`}>
-                    {String.fromCharCode(65 + idx)}
-                  </span>
-                  {opt}
-                </div>
-              );
-            })
-          ) : (
-             <div className="col-span-2 text-center py-12 border-2 border-dashed border-white/10 bg-black/40">
-                {/* FIX: Using conditional rendering instead of opacity to prevent text flashing */}
-                {!showAnswer ? (
-                  <div className="text-hk-neonBlue/70 italic animate-pulse text-xl">
-                    Thinking... (Pregunta abierta)
+          {/* Options / Answer Display - Grid */}
+          <div className={`flex-none grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 ${showImage ? 'mt-2' : 'mt-8'}`}>
+            {question.options ? (
+              question.options.map((opt, idx) => {
+                const isCorrect = showAnswer && question.correctIndices?.includes(idx);
+                const isWrong = showAnswer && !question.correctIndices?.includes(idx);
+                const theme = optionColors[idx % optionColors.length];
+                
+                return (
+                  <div 
+                    key={idx}
+                    className={`
+                      p-3 md:p-5 border-2 text-lg md:text-xl font-sans transition-all duration-500 flex items-center bg-black/80 tracking-wide
+                      ${!showAnswer 
+                          ? `${theme.border} ${theme.text} ${theme.shadow} ${theme.hover} cursor-pointer` 
+                          : ''}
+                      ${isCorrect ? 'border-hk-neonGreen bg-hk-neonGreen/20 text-white shadow-[0_0_20px_lime] z-10 font-bold scale-105' : ''}
+                      ${isWrong ? 'border-red-900/50 text-gray-600 opacity-40' : ''}
+                    `}
+                  >
+                    <span className={`w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-sm mr-3 md:mr-4 border-2 font-serif text-sm md:text-base 
+                      ${!showAnswer ? `${theme.border} ${theme.text}` : ''}
+                      ${isCorrect ? 'border-hk-neonGreen text-hk-neonGreen' : ''}
+                      ${isWrong ? 'border-gray-600 text-gray-600' : ''}
+                    `}>
+                      {String.fromCharCode(65 + idx)}
+                    </span>
+                    {opt}
                   </div>
-                ) : (
-                   <div className="animate-fade-in">
-                      <div className="text-hk-gold text-sm uppercase tracking-[0.3em] mb-4">Respuesta Correcta</div>
-                      <div className="text-4xl md:text-6xl font-serif text-hk-neonGreen neon-text-green">{question.correctText}</div>
-                   </div>
-                )}
-             </div>
-          )}
-        </div>
-      </NeonCard>
+                );
+              })
+            ) : (
+               <div className="col-span-2 text-center py-8 border-2 border-dashed border-white/10 bg-black/40">
+                  {!showAnswer ? (
+                    <div className="text-hk-neonBlue/70 italic animate-pulse text-lg md:text-xl">
+                      Thinking... (Pregunta abierta)
+                    </div>
+                  ) : (
+                     <div className="animate-fade-in">
+                        <div className="text-hk-gold text-xs uppercase tracking-[0.3em] mb-2">Respuesta Correcta</div>
+                        <div className="text-3xl md:text-5xl font-serif text-hk-neonGreen neon-text-green">{question.correctText}</div>
+                     </div>
+                  )}
+               </div>
+            )}
+          </div>
+      </div>
 
-      {/* Controls Area */}
-      <div className="w-full max-w-4xl bg-black/80 p-6 border-t-2 border-hk-red backdrop-blur-md">
+      {/* Controls Area - Compact Bottom Bar */}
+      <div className="flex-none pt-4 pb-2 z-20">
         {!showAnswer ? (
           <div className="flex justify-center">
-            <NeonButton onClick={() => setShowAnswer(true)} variant="secondary" className="text-xl px-12">
+            <NeonButton onClick={() => setShowAnswer(true)} variant="secondary" className="text-lg px-8">
               VER RESPUESTA
             </NeonButton>
           </div>
         ) : (
-          <div className="animate-fade-in">
-            <h3 className="text-center text-white font-serif mb-6 uppercase tracking-widest text-lg border-b border-white/20 pb-2 inline-block w-full">
-                ¿Quién ha acertado? (+1 Punto)
-            </h3>
-            <div className="flex flex-wrap justify-center gap-4 mb-8">
-              {players.map(p => {
-                 const isSelected = selectedWinners.has(p.id);
-                 return (
-                  <button
-                    key={p.id}
-                    onClick={() => toggleWinner(p.id)}
-                    className={`
-                      px-6 py-3 rounded-sm border-2 transition-all duration-200 font-sans tracking-wide
-                      ${isSelected 
-                        ? 'bg-hk-neonBlue border-hk-neonBlue text-black font-bold shadow-[0_0_15px_cyan] transform -translate-y-1' 
-                        : 'bg-transparent border-gray-600 text-gray-400 hover:border-white hover:text-white'}
-                    `}
-                  >
-                    {p.name}
-                  </button>
-                 );
-              })}
-              <button 
-                onClick={() => setSelectedWinners(new Set())}
-                className="px-6 py-3 rounded-sm border-2 border-red-900 text-red-700 hover:text-red-500 hover:border-red-500 text-xs uppercase"
-              >
-                Nadie
-              </button>
+          <>
+            {/* Bottom Player Selection Bar */}
+            <div className="animate-fade-in w-full bg-black/80 border-t border-hk-gold/30 p-2 backdrop-blur-md flex flex-col items-center justify-center gap-4 rounded-t-xl relative z-20">
+               <div className="flex items-center gap-4">
+                   <h3 className="text-white font-serif uppercase text-sm md:text-base tracking-widest whitespace-nowrap">
+                      Puntos (+{points}):
+                  </h3>
+                  <div className="flex flex-wrap gap-2 justify-center">
+                    {players.map(p => {
+                       const isSelected = selectedWinners.has(p.id);
+                       return (
+                        <button
+                          key={p.id}
+                          onClick={() => toggleWinner(p.id)}
+                          className={`
+                            px-3 py-1 rounded-sm border transition-all duration-200 font-sans text-sm
+                            ${isSelected 
+                              ? 'bg-hk-neonBlue border-hk-neonBlue text-black font-bold shadow-[0_0_10px_cyan]' 
+                              : 'bg-transparent border-gray-600 text-gray-400 hover:border-white hover:text-white'}
+                          `}
+                        >
+                          {p.name}
+                        </button>
+                       );
+                    })}
+                    <div className="w-px h-6 bg-gray-700 mx-1"></div>
+                    <button 
+                      onClick={() => setSelectedWinners(new Set())}
+                      className="px-3 py-1 rounded-sm border border-red-900 text-red-700 hover:text-red-500 hover:border-red-500 text-xs uppercase"
+                    >
+                      Reset
+                    </button>
+                  </div>
+               </div>
             </div>
-            
-            <div className="flex justify-center">
-              <NeonButton onClick={() => onNext(Array.from(selectedWinners))} variant="primary" className="text-lg">
-                {currentNumber === totalQuestions ? "VER RANKING FINAL" : "SIGUIENTE PREGUNTA"}
-              </NeonButton>
-            </div>
-          </div>
+
+            {/* FIXED CENTER-RIGHT NEXT ARROW - HOLLOW NEON STYLE */}
+            <button 
+               onClick={() => onNext(Array.from(selectedWinners))}
+               className="fixed right-10 top-1/2 -translate-y-1/2 z-50 group hover:scale-105 transition-transform duration-300"
+            >
+               {/* Neon Circle Container */}
+               <div className="w-24 h-24 rounded-full border-4 border-hk-neonGreen shadow-[0_0_20px_#39FF14,inset_0_0_10px_#39FF14] flex items-center justify-center bg-black/20 backdrop-blur-sm animate-neon-flicker">
+                   {/* Hollow Arrow Icon */}
+                   <ChevronRight size={64} className="text-hk-neonGreen drop-shadow-[0_0_10px_#39FF14]" strokeWidth={3} />
+               </div>
+               {/* Label */}
+               <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 text-center">
+                   <span className="text-hk-neonGreen font-serif text-sm tracking-[0.2em] font-bold drop-shadow-[0_0_5px_#39FF14] whitespace-nowrap">
+                       {currentNumber === totalQuestions ? "RANKING" : "NEXT"}
+                   </span>
+               </div>
+            </button>
+          </>
         )}
       </div>
     </div>
@@ -574,10 +649,14 @@ const App: React.FC = () => {
   const handlePrepComplete = () => setScreen(Screen.QUIZ);
   
   const handleNextQuestion = (winnerIds: string[]) => {
+    // Points logic
+    const currentQ = QUESTIONS[currentQuestionIndex];
+    const pointsToAdd = currentQ.points || 1;
+
     // Update scores
     if (winnerIds.length > 0) {
       setPlayers(prev => prev.map(p => 
-        winnerIds.includes(p.id) ? { ...p, score: p.score + 1 } : p
+        winnerIds.includes(p.id) ? { ...p, score: p.score + pointsToAdd } : p
       ));
     }
 
@@ -605,17 +684,18 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen text-white font-sans overflow-x-hidden transition-all duration-500 bg-pattern" style={bgStyle}>
+    <div className="h-screen text-white font-sans overflow-hidden transition-all duration-500 bg-pattern" style={bgStyle}>
        {/* Global Atmosphere - Neon Glows */}
        <div className="fixed top-0 left-0 w-full h-32 bg-gradient-to-b from-hk-red/10 to-transparent pointer-events-none z-0"></div>
        <div className="fixed bottom-0 left-0 w-full h-32 bg-gradient-to-t from-hk-neonBlue/10 to-transparent pointer-events-none z-0"></div>
        
-       <div className="relative z-10 w-full">
+       <div className="relative z-10 w-full h-full">
          {screen === Screen.START && <StartScreen onStart={handleStart} />}
          {screen === Screen.INTRO && <IntroScreen players={players} onNext={handleIntroNext} />}
          {screen === Screen.PREP && <PrepScreen onComplete={handlePrepComplete} />}
          {screen === Screen.QUIZ && (
            <QuizScreen 
+              key={currentQuestionIndex} 
               players={players}
               question={QUESTIONS[currentQuestionIndex]}
               totalQuestions={QUESTIONS.length}
